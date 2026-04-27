@@ -30,6 +30,8 @@ def capture_screen():
 # OCR DETECTION
 # =============================
 def find_notepad_candidates(debug=True):
+    pyautogui.hotkey("win", "d")
+    time.sleep(0.8)
     img = capture_screen()
     h, w = img.shape[:2]
 
