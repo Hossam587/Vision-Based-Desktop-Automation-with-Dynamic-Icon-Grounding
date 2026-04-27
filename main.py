@@ -29,58 +29,6 @@ def capture_screen():
 # =============================
 # OCR DETECTION
 # =============================
-# def find_notepad_candidates(debug=True):
-#     img = capture_screen()
-#     results = reader.readtext(img)
-
-#     candidates = []
-
-#     for (bbox, text, prob) in results:
-#         text_clean = text.lower()
-#         score = fuzz.partial_ratio(text_clean, TARGET)
-
-#         if score >= 50:  # collect more options
-#             (tl, tr, br, bl) = bbox
-
-#             center_x = int((tl[0] + br[0]) / 2)
-#             center_y = int((tl[1] + br[1]) / 2)
-
-#             icon_y = int(center_y - ICON_OFFSET_Y)
-
-#             candidates.append((score, center_x, icon_y, bbox, text_clean))
-
-#     # sort best first
-#     candidates.sort(key=lambda x: x[0], reverse=True)
-
-#     # DEBUG DRAW
-#     if debug:
-#         for score, cx, cy, bbox, text in candidates:
-#             (tl, tr, br, bl) = bbox
-
-#             color = (0, 0, 255)
-#             if score > 70:
-#                 color = (0, 255, 255)
-#             if score > 85:
-#                 color = (0, 255, 0)
-
-            
-#             cv2.rectangle(img,
-#               (int(tl[0]), int(tl[1])),
-#               (int(br[0]), int(br[1])),
-#               color, 2)
-
-#             # draw click point
-#             cv2.circle(img, (cx, cy), 6, (255, 0, 0), -1)
-
-#             cv2.putText(img, f"{text}:{score}",
-#                         (int(tl[0]), int(tl[1]) - 5),
-#                         cv2.FONT_HERSHEY_SIMPLEX, 0.4,
-#                         color, 1)
-
-#         cv2.imwrite("debug_detection.png", img)
-
-#     return candidates
-
 def find_notepad_candidates(debug=True):
     img = capture_screen()
     h, w = img.shape[:2]
@@ -143,10 +91,10 @@ def find_notepad_candidates(debug=True):
             if score > 85:
                 color = (0, 255, 0)
 
-            # ✅ FULL ICON BOX
+            # FULL ICON BOX
             cv2.rectangle(debug_img, (x1, y1), (x2, y2), color, 2)
 
-            # ✅ CLICK POINT
+            # CLICK POINT
             cv2.circle(debug_img, (cx, cy), 6, (255, 0, 0), -1)
 
             cv2.putText(debug_img,
@@ -175,9 +123,6 @@ def is_notepad_open():
 # =============================
 # CLOSE WINDOW
 # =============================
-# def close_window():
-#     pyautogui.hotkey("alt", "f4")
-#     time.sleep(1)
 def close_window():
     windows = gw.getWindowsWithTitle("Notepad")
 
@@ -188,7 +133,7 @@ def close_window():
         pyautogui.hotkey("alt", "f4")
         time.sleep(1)
     else:
-        print("⚠️ Notepad not active — skipping close")
+        print("Notepad not active — skipping close")
 
 # =============================
 # OPEN NOTEPAD (RETRY)
@@ -200,7 +145,7 @@ def open_notepad():
         candidates = find_notepad_candidates()
 
         if not candidates:
-            print("⚠️ No candidates — retrying...")
+            print("No candidates — retrying...")
             time.sleep(1)
             continue
 
@@ -213,13 +158,13 @@ def open_notepad():
             for _ in range(5):
                 time.sleep(0.5)
                 if is_notepad_open():
-                    print("✅ Notepad opened")
+                    print("Notepad opened")
                     return True
 
-            print("❌ Wrong app — closing")
+            print("Wrong app — closing")
             close_window()
 
-    print("❌ Failed to open Notepad after retries")
+    print("Failed to open Notepad after retries")
 
     # fallback: show desktop (handle occlusion)
     print("Trying fallback: show desktop")
@@ -251,132 +196,41 @@ def write_post(post):
     text = f"Title: {post['title']}\n\n{post['body']}"
     pyautogui.write(text, interval=0.01)
 
-# def save_post(post_id):
-#     pyautogui.hotkey("ctrl", "s")
-#     time.sleep(1)
-
-#     filename = f"post_{post_id}.txt"
-#     pyautogui.write(filename)
-#     pyautogui.press("enter")
-#     time.sleep(1)
-
-#     # handle overwrite popup
-#     pyautogui.press("left")   # select "Yes"
-#     pyautogui.press("enter")
-#     time.sleep(1)
-# 
-# def save_post(post_id):
-#     # Focus Notepad first (VERY important)
-#     window = gw.getWindowsWithTitle("Notepad")
-#     if window:
-#         window[0].activate()
-#         time.sleep(0.5)
-
-#     # Open Save dialog
-#     pyautogui.hotkey("ctrl", "s")
-#     time.sleep(1.5)
-
-#     filename = f"post_{post_id}.txt"
-
-#     # Clear any prefilled text (important for stability)
-#     pyautogui.hotkey("ctrl", "a")
-#     pyautogui.press("backspace")
-
-#     pyautogui.write(filename, interval=0.01)
-#     pyautogui.press("enter")
-
-#     time.sleep(1)
-
-#     # 🔴 KEY FIX: ensure dialog is gone and focus won't return to editor
-#     pyautogui.press("esc")
-#     time.sleep(0.3)
-
-# def save_post(post_id):
-
-#     pyautogui.hotkey("ctrl", "s")
-#     time.sleep(1.5)   # IMPORTANT: give dialog time
-#     filename = f"post_{post_id}.txt"
-#     pyautogui.write(filename, interval=0.01)
-
-#     #time.sleep(0.3)
-#     pyautogui.press("enter")
-
-
-    # Check for overwrite popup (best-effort)
-    # if is_save_popup_open():
-    #     print("Overwrite popup detected → confirming")
-
-    #     pyautogui.press("left")   # move to "Yes"
-    #     pyautogui.press("enter")
-    #     time.sleep(1)
-    # else:
-    #print("Saved without overwrite popup")
 def save_post(post_id):
-    window = gw.getWindowsWithTitle("Notepad")
-    if window:
-        window[0].activate()
+    filename = f"post_{post_id}.txt"
+    
+    # Ensure Notepad is focused
+    win = gw.getWindowsWithTitle("Notepad")
+    if win:
+        win[0].activate()
         time.sleep(0.5)
 
+    # Trigger Save Dialog
     pyautogui.hotkey("ctrl", "s")
-    time.sleep(1.5)
+    
+    # Wait up to 3 seconds for the "Save As" dialog to exist
+    start_time = time.time()
+    save_dialog = None
+    while time.time() - start_time < 3:
+        save_dialog = gw.getWindowsWithTitle("Save As")
+        if save_dialog:
+            break
+        time.sleep(0.1)
 
-    filename = f"post_{post_id}.txt"
+    # 1. Clear and Type Filename
     pyautogui.hotkey("ctrl", "a")
     pyautogui.press("backspace")
-    pyautogui.write(filename, interval=0.01)
+    pyautogui.write(filename)
     pyautogui.press("enter")
     time.sleep(1)
 
-    # If the "Confirm Save As" overwrite popup appears, it becomes the active window
-    active_window = pyautogui.getActiveWindow()
-    if active_window and "save as" in active_window.title.lower():
-        print(f"⚠️ Overwrite popup detected for {filename} -> confirming")
-        pyautogui.press("left")   # Move to "Yes"
+    # 2. Check for "Confirm Save As" (The Overwrite Popup)
+    confirm_win = gw.getWindowsWithTitle("Confirm Save As")
+    if confirm_win:
+        print(f"⚠️ Overwriting existing file: {filename}")
+        pyautogui.press("left")  
         pyautogui.press("enter")
-        time.sleep(1)
-    else:
-        print(f"✅ Saved {filename}")
-def save_post(post_id):
-    window = gw.getWindowsWithTitle("Notepad")
-    if window:
-        window[0].activate()
         time.sleep(0.5)
-
-    pyautogui.hotkey("ctrl", "s")
-    time.sleep(1.5)
-
-    filename = f"post_{post_id}.txt"
-
-    pyautogui.hotkey("ctrl", "a")
-    pyautogui.press("backspace")
-
-    pyautogui.write(filename, interval=0.01)
-    pyautogui.press("enter")
-    
-    # Give the system time to trigger the overwrite popup
-    time.sleep(1.5) 
-
-    # ==========================================
-    # POINT 2 FIX: HANDLE OVERWRITE POPUP
-    # ==========================================
-    active_window = pyautogui.getActiveWindow()
-    
-    # Windows names this specific popup "Confirm Save As"
-    if active_window and "confirm save as" in active_window.title.lower():
-        print(f"⚠️ File '{filename}' already exists -> Overwriting")
-        
-        # In Windows, pressing Alt+Y is the built-in shortcut to click "Yes" 
-        # on dialog boxes. It is safer than relying on Left/Right arrows.
-        pyautogui.hotkey("alt", "y") 
-        
-        # Alternatively, if Alt+Y doesn't work on your specific OS version, use:
-        # pyautogui.press("left")
-        # pyautogui.press("enter")
-        
-        time.sleep(1)
-    else:
-        print(f"✅ Saved '{filename}' successfully.")
-
 def is_save_popup_open():
     """
     Heuristic detection:
@@ -400,49 +254,42 @@ def is_save_popup_open():
 
     return False
 
-# def close_notepad():
-#     pyautogui.hotkey("alt", "f4")
-#     time.sleep(1)
-
-#     # handle "Save changes?" popup
-#     if is_notepad_open():
-#         pyautogui.press("right")  # move to "Don't Save"
-#         pyautogui.press("enter")
-#         time.sleep(1)
-# def close_notepad():
-#     window = gw.getWindowsWithTitle("Notepad")
-
-#     if window:
-#         window[0].activate()
-#         time.sleep(0.5)
-
-#         # force close immediately (prevents typing into editor)
-#         pyautogui.hotkey("alt", "f4")
-#         time.sleep(1)
-
-#         # if "Save changes?" appears, discard it safely
-#         pyautogui.press("right")  # move to Don't Save
-#         pyautogui.press("enter")
-#         time.sleep(1)
+# =============================
+# CLOSE WINDOW (FIXED)
+# =============================
 def close_notepad():
     windows = gw.getWindowsWithTitle("Notepad")
 
-    if windows:
-        windows[0].activate()
+    if not windows:
+        return
+
+    window = windows[0]
+    try:
+        window.activate()
         time.sleep(0.5)
+    except:
+        pass
 
-        pyautogui.hotkey("alt", "f4")
-        time.sleep(1)
 
-        # Check if a Notepad dialog ("Save changes?") is blocking the close
-        active_window = pyautogui.getActiveWindow()
-        if active_window and "notepad" in active_window.title.lower():
-            print("⚠️ 'Save changes?' prompt detected -> Discarding")
-            pyautogui.press("right")  # Move to "Don't Save"
+    window.close()
+    time.sleep(1)
+
+    # 2. Check if the window is STILL open. 
+    still_open = gw.getWindowsWithTitle("Notepad")
+    if still_open:
+        print("'Save changes?' prompt detected -> Discarding")
+        
+        pyautogui.press("n") 
+        time.sleep(0.5)
+        
+        # Fallback just in case 'n' didn't work
+        if gw.getWindowsWithTitle("Notepad"):
+            pyautogui.press("right")
+            time.sleep(0.2)
             pyautogui.press("enter")
             time.sleep(1)
-        else:
-            print("✅ Notepad closed cleanly")
+            
+    print("Notepad closed cleanly.")
 # =============================
 # MAIN
 # =============================
@@ -454,16 +301,15 @@ def main():
 
     for post in posts:
         # --- VERIFICATION STEP ---
-        # Before opening a new one, make sure no Notepads are lingering
         existing_notepads = gw.getWindowsWithTitle("Notepad")
         for win in existing_notepads:
-            print(f"🧹 Cleaning up leftover window: {win.title}")
+            print(f"Cleaning up leftover window: {win.title}")
             win.close() 
             time.sleep(0.5)
             # Handle the "Save changes?" if it appears during cleanup
             active = pyautogui.getActiveWindow()
             if active and "notepad" in active.title.lower():
-                pyautogui.press("right") # Don't Save
+                pyautogui.press("right") 
                 pyautogui.press("enter")
         print(f"\nProcessing post {post['id']}")
 
