@@ -136,7 +136,7 @@ def close_window():
         print("Notepad not active — skipping close")
 
 # =============================
-# OPEN NOTEPAD (RETRY)
+# OPEN NOTEPAD
 # =============================
 def open_notepad():
     for attempt in range(3):  
@@ -227,7 +227,7 @@ def save_post(post_id):
     # 2. Check for "Confirm Save As" (The Overwrite Popup)
     confirm_win = gw.getWindowsWithTitle("Confirm Save As")
     if confirm_win:
-        print(f"⚠️ Overwriting existing file: {filename}")
+        print(f"Overwriting existing file: {filename}")
         pyautogui.press("left")  
         pyautogui.press("enter")
         time.sleep(0.5)
@@ -255,7 +255,7 @@ def is_save_popup_open():
     return False
 
 # =============================
-# CLOSE WINDOW (FIXED)
+# CLOSE WINDOW
 # =============================
 def close_notepad():
     windows = gw.getWindowsWithTitle("Notepad")
@@ -274,7 +274,7 @@ def close_notepad():
     window.close()
     time.sleep(1)
 
-    # 2. Check if the window is STILL open. 
+    # 2. Check if the window is still open. 
     still_open = gw.getWindowsWithTitle("Notepad")
     if still_open:
         print("'Save changes?' prompt detected -> Discarding")
