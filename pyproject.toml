@@ -1,0 +1,21 @@
+[project]
+name = "tjm-project-directory"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "easyocr>=1.7.2",
+    "groundingdino-py>=0.4.0",
+    "mss>=10.1.0",
+    "numpy>=2.4.4",
+    "opencv-python>=4.13.0.92",
+    "pillow>=12.2.0",
+    "pyautogui>=0.9.54",
+    "rapidfuzz>=3.14.5",
+    "requests>=2.33.1",
+    "torch>=2.11.0",
+    "torchaudio>=2.11.0",
+    "torchvision>=0.26.0",
+    "ultralytics>=8.4.41",
+]
